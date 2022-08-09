@@ -115,15 +115,16 @@ const uint8_t S7CpuStatusStop    = 0x04;
 #define Size_RD     31
 #define Size_WR     35
 
-//typedef uint16_t uint16_t;          // 16 bit unsigned integer
+typedef uint8_t byte;          // 16 bit unsigned integer
+typedef uint16_t word;          // 16 bit unsigned integer
 
 typedef int16_t integer;        // 16 bit signed integer
-typedef unsigned long duint16_t;    // 32 bit unsigned integer
+typedef unsigned long dword;    // 32 bit unsigned integer
 typedef long dint;              // 32 bit signed integer
 
-typedef uint8_t *pbyte;
-typedef uint16_t *puint16_t;
-typedef duint16_t *pduint16_t;
+typedef byte *pbyte;
+typedef word *pword;
+typedef dword *pdword;
 typedef integer *pinteger;
 typedef dint *pdint;
 typedef float *pfloat;
@@ -145,14 +146,14 @@ typedef union{
 class S7Helper
 {
 public:
-	bool BitAt(void *Buffer, int uint8_tIndex, uint8_t BitIndex);
-	bool BitAt(int uint8_tIndex, int BitIndex);
-	uint8_t byteAt(void *Buffer, int index);
-	uint8_t byteAt(int index);
-	uint16_t uint16_tAt(void *Buffer, int index);
-	uint16_t uint16_tAt(int index);
-	duint16_t Duint16_tAt(void *Buffer, int index);
-	duint16_t Duint16_tAt(int index);
+	bool BitAt(void *Buffer, int ByteIndex, byte BitIndex);
+	bool BitAt(int ByteIndex, int BitIndex);
+	byte ByteAt(void *Buffer, int index);
+	byte ByteAt(int index);
+	word WordAt(void *Buffer, int index);
+	word WordAt(int index);
+	dword DWordAt(void *Buffer, int index);
+	dword DWordAt(int index);
 	float FloatAt(void *Buffer, int index);
 	float FloatAt(int index);
 	integer IntegerAt(void *Buffer, int index);
@@ -160,24 +161,24 @@ public:
 	long DintAt(void *Buffer, int index);
 	long DintAt(int index);
 	// New 2.0
-    void SetBitAt(void *Buffer, int uint8_tIndex, int BitIndex, bool Value);
-	void SetBitAt(int uint8_tIndex, int BitIndex, bool Value);
-	void SetByteAt(void *Buffer, int index, uint8_t value);
-	void SetByteAt(int index, uint8_t value);
+    void SetBitAt(void *Buffer, int ByteIndex, int BitIndex, bool Value);
+	void SetBitAt(int ByteIndex, int BitIndex, bool Value);
+	void SetByteAt(void *Buffer, int index, byte value);
+	void SetByteAt(int index, byte value);
 	void SetIntAt(void *Buffer, int index, integer value);
 	void SetIntAt(int index, integer value);
 	void SetDIntAt(void *Buffer, int index, dint value);
 	void SetDIntAt(int index, dint value);
-	void Setuint16_tAt(void *Buffer, int index, uint16_t value);
-	void Setuint16_tAt(int index, uint16_t value);
-	void SetDuint16_tAt(void *Buffer, int index, duint16_t value);
-	void SetDuint16_tAt(int index, uint16_t value);
+	void SetWordAt(void *Buffer, int index, word value);
+	void SetWordAt(int index, word value);
+	void SetDWordAt(void *Buffer, int index, dword value);
+	void SetDWordAt(int index, word value);
 	void SetFloatAt(void *Buffer, int index, float value);
 	void SetFloatAt(int index, float value);
 	char * StringAt(void *Buffer, int index);
 	char * StringAt(int index);
 	void SetStringAt(void *Buffer, int index, char *value);
-	void SetStringAt(int index, char *value);	
+	void SetStringAt(int index, char *value);
 };
 extern S7Helper S7;
 
