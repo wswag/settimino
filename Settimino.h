@@ -92,11 +92,11 @@
 #define S7AreaCT    0x1C
 #define S7AreaTM    0x1D
 
-// uint16_tLength
+// WordLength
 #define S7WLBit     0x01
-#define S7WLuByte    0x02
-#define S7WLuint16_t    0x04
-#define S7WLDuint16_t   0x06
+#define S7WLByte    0x02
+#define S7WLWord    0x04
+#define S7WLDWord   0x06
 #define S7WLReal    0x08
 #define S7WLCounter 0x1C
 #define S7WLTimer   0x1D
