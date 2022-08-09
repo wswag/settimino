@@ -80,9 +80,9 @@
 #define ISOSize        7  // Size of TPKT + COTP Header
 #define isotcp       102  // ISOTCP Port
 #define MinPduSize    16  // Minimum S7 valid telegram size
-#define MaxPduSize   247  // Maximum S7 valid telegram size (we negotiate 240 uint8_ts + ISOSize)
+#define MaxPduSize   247  // Maximum S7 valid telegram size (we negotiate 240 bytes + ISOSize)
 #define CC          0xD0  // Connection confirm
-#define Shift         17  // We receive data 17 uint8_ts above to align with PDU.DATA[]
+#define Shift         17  // We receive data 17 bytes above to align with PDU.DATA[]
 
 // S7 ID Area (Area that we want to read/write)
 #define S7AreaPE    0x81
@@ -94,7 +94,7 @@
 
 // uint16_tLength
 #define S7WLBit     0x01
-#define S7WLuint8_t    0x02
+#define S7WLuByte    0x02
 #define S7WLuint16_t    0x04
 #define S7WLDuint16_t   0x06
 #define S7WLReal    0x08
@@ -102,7 +102,7 @@
 #define S7WLTimer   0x1D
 
 #define TS_ResBit   0x03
-#define TS_Resuint8_t  0x04
+#define TS_ResByte  0x04
 #define TS_ResInt   0x05
 #define TS_ResReal  0x07
 #define TS_ResOctet 0x09
@@ -121,7 +121,7 @@ typedef int16_t integer;        // 16 bit signed integer
 typedef unsigned long duint16_t;    // 32 bit unsigned integer
 typedef long dint;              // 32 bit signed integer
 
-typedef uint8_t *puint8_t;
+typedef uint8_t *pbyte;
 typedef uint16_t *puint16_t;
 typedef duint16_t *pduint16_t;
 typedef integer *pinteger;
@@ -147,8 +147,8 @@ class S7Helper
 public:
 	bool BitAt(void *Buffer, int uint8_tIndex, uint8_t BitIndex);
 	bool BitAt(int uint8_tIndex, int BitIndex);
-	uint8_t uint8_tAt(void *Buffer, int index);
-	uint8_t uint8_tAt(int index);
+	uint8_t byteAt(void *Buffer, int index);
+	uint8_t byteAt(int index);
 	uint16_t uint16_tAt(void *Buffer, int index);
 	uint16_t uint16_tAt(int index);
 	duint16_t Duint16_tAt(void *Buffer, int index);
@@ -162,8 +162,8 @@ public:
 	// New 2.0
     void SetBitAt(void *Buffer, int uint8_tIndex, int BitIndex, bool Value);
 	void SetBitAt(int uint8_tIndex, int BitIndex, bool Value);
-	void Setuint8_tAt(void *Buffer, int index, uint8_t value);
-	void Setuint8_tAt(int index, uint8_t value);
+	void SetByteAt(void *Buffer, int index, uint8_t value);
+	void SetByteAt(int index, uint8_t value);
 	void SetIntAt(void *Buffer, int index, integer value);
 	void SetIntAt(int index, integer value);
 	void SetDIntAt(void *Buffer, int index, dint value);
@@ -235,7 +235,7 @@ public:
 	int WriteArea(int Area, uint16_t DBNumber, uint16_t Start, uint16_t Amount, void *ptrData); 
 	int WriteArea(int Area, uint16_t DBNumber, uint16_t Start, uint16_t Amount, int uint16_tLen, void *ptrData); 
 	int WriteBit(int Area, uint16_t DBNumber, uint16_t BitIndex, bool Bit); 
-	int WriteBit(int Area, uint16_t DBNumber, uint16_t uint8_tIndex, uint16_t BitInuint8_t, bool Bit); 
+	int WriteBit(int Area, uint16_t DBNumber, uint16_t byteIndex, uint16_t BitInByte, bool Bit); 
 	
 	int GetPDULength(){ return PDULength; }
 	// Extended functions
