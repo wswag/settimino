@@ -116,7 +116,8 @@ const uint8_t S7CpuStatusStop    = 0x04;
 #define Size_WR     35
 
 typedef uint8_t byte;          // 16 bit unsigned integer
-typedef uint16_t word;          // 16 bit unsigned integer
+// already defined in Arduino.h
+//typedef uint16_t word;          // 16 bit unsigned integer
 
 typedef int16_t integer;        // 16 bit signed integer
 typedef unsigned long dword;    // 32 bit unsigned integer
