@@ -33,7 +33,10 @@
 |=============================================================================*/
 #ifndef SETTIMINO_H
 #define SETTIMINO_H
-#include "Platform.h"
+
+#include <stdint.h>
+#include <Arduino.h>
+#include <Client.h>
 
 // Memory models
 
@@ -77,9 +80,9 @@
 #define ISOSize        7  // Size of TPKT + COTP Header
 #define isotcp       102  // ISOTCP Port
 #define MinPduSize    16  // Minimum S7 valid telegram size
-#define MaxPduSize   247  // Maximum S7 valid telegram size (we negotiate 240 bytes + ISOSize)
+#define MaxPduSize   247  // Maximum S7 valid telegram size (we negotiate 240 uint8_ts + ISOSize)
 #define CC          0xD0  // Connection confirm
-#define Shift         17  // We receive data 17 bytes above to align with PDU.DATA[]
+#define Shift         17  // We receive data 17 uint8_ts above to align with PDU.DATA[]
 
 // S7 ID Area (Area that we want to read/write)
 #define S7AreaPE    0x81
@@ -89,38 +92,38 @@
 #define S7AreaCT    0x1C
 #define S7AreaTM    0x1D
 
-// WordLength
+// uint16_tLength
 #define S7WLBit     0x01
-#define S7WLByte    0x02
-#define S7WLWord    0x04
-#define S7WLDWord   0x06
+#define S7WLuint8_t    0x02
+#define S7WLuint16_t    0x04
+#define S7WLDuint16_t   0x06
 #define S7WLReal    0x08
 #define S7WLCounter 0x1C
 #define S7WLTimer   0x1D
 
 #define TS_ResBit   0x03
-#define TS_ResByte  0x04
+#define TS_Resuint8_t  0x04
 #define TS_ResInt   0x05
 #define TS_ResReal  0x07
 #define TS_ResOctet 0x09
 
-const byte S7CpuStatusUnknown = 0x00;
-const byte S7CpuStatusRun     = 0x08;
-const byte S7CpuStatusStop    = 0x04;
+const uint8_t S7CpuStatusUnknown = 0x00;
+const uint8_t S7CpuStatusRun     = 0x08;
+const uint8_t S7CpuStatusStop    = 0x04;
 
 #define RxOffset    18
 #define Size_RD     31
 #define Size_WR     35
 
-//typedef uint16_t word;          // 16 bit unsigned integer
+//typedef uint16_t uint16_t;          // 16 bit unsigned integer
 
 typedef int16_t integer;        // 16 bit signed integer
-typedef unsigned long dword;    // 32 bit unsigned integer
+typedef unsigned long duint16_t;    // 32 bit unsigned integer
 typedef long dint;              // 32 bit signed integer
 
-typedef byte *pbyte;
-typedef word *pword;
-typedef dword *pdword;
+typedef uint8_t *puint8_t;
+typedef uint16_t *puint16_t;
+typedef duint16_t *pduint16_t;
 typedef integer *pinteger;
 typedef dint *pdint;
 typedef float *pfloat;
@@ -128,10 +131,10 @@ typedef char *pchar;
 
 typedef union{
 	struct {
-		byte H[Size_WR];                      // PDU Header
-		byte DATA[MaxPduSize-Size_WR+Shift];  // PDU Data
+		uint8_t H[Size_WR];                      // PDU Header
+		uint8_t DATA[MaxPduSize-Size_WR+Shift];  // PDU Data
 	};
-	byte RAW[MaxPduSize+Shift];
+	uint8_t RAW[MaxPduSize+Shift];
 }TPDU;
 
 
@@ -142,14 +145,14 @@ typedef union{
 class S7Helper
 {
 public:
-	bool BitAt(void *Buffer, int ByteIndex, byte BitIndex);
-	bool BitAt(int ByteIndex, int BitIndex);
-	byte ByteAt(void *Buffer, int index);
-	byte ByteAt(int index);
-	word WordAt(void *Buffer, int index);
-	word WordAt(int index);
-	dword DWordAt(void *Buffer, int index);
-	dword DWordAt(int index);
+	bool BitAt(void *Buffer, int uint8_tIndex, uint8_t BitIndex);
+	bool BitAt(int uint8_tIndex, int BitIndex);
+	uint8_t uint8_tAt(void *Buffer, int index);
+	uint8_t uint8_tAt(int index);
+	uint16_t uint16_tAt(void *Buffer, int index);
+	uint16_t uint16_tAt(int index);
+	duint16_t Duint16_tAt(void *Buffer, int index);
+	duint16_t Duint16_tAt(int index);
 	float FloatAt(void *Buffer, int index);
 	float FloatAt(int index);
 	integer IntegerAt(void *Buffer, int index);
@@ -157,18 +160,18 @@ public:
 	long DintAt(void *Buffer, int index);
 	long DintAt(int index);
 	// New 2.0
-    void SetBitAt(void *Buffer, int ByteIndex, int BitIndex, bool Value);
-	void SetBitAt(int ByteIndex, int BitIndex, bool Value);
-	void SetByteAt(void *Buffer, int index, byte value);
-	void SetByteAt(int index, byte value);
+    void SetBitAt(void *Buffer, int uint8_tIndex, int BitIndex, bool Value);
+	void SetBitAt(int uint8_tIndex, int BitIndex, bool Value);
+	void Setuint8_tAt(void *Buffer, int index, uint8_t value);
+	void Setuint8_tAt(int index, uint8_t value);
 	void SetIntAt(void *Buffer, int index, integer value);
 	void SetIntAt(int index, integer value);
 	void SetDIntAt(void *Buffer, int index, dint value);
 	void SetDIntAt(int index, dint value);
-	void SetWordAt(void *Buffer, int index, word value);
-	void SetWordAt(int index, word value);
-	void SetDWordAt(void *Buffer, int index, dword value);
-	void SetDWordAt(int index, word value);
+	void Setuint16_tAt(void *Buffer, int index, uint16_t value);
+	void Setuint16_tAt(int index, uint16_t value);
+	void SetDuint16_tAt(void *Buffer, int index, duint16_t value);
+	void SetDuint16_tAt(int index, uint16_t value);
 	void SetFloatAt(void *Buffer, int index, float value);
 	void SetFloatAt(int index, float value);
 	char * StringAt(void *Buffer, int index);
@@ -197,8 +200,6 @@ private:
 	uint8_t LastPDUType;
 	uint16_t ConnType;
 	
-	IPAddress Peer;
-	
 	// Since we can use either an EthernetClient or a WifiClient 
 	// we have to create the class as an ancestor and then resolve
 	// the inherited into S7Client creator.
@@ -209,7 +210,6 @@ private:
 	int WaitForData(uint16_t Size, uint16_t Timeout);
 	int RecvISOPacket(uint16_t *Size);
 	int RecvPacket(uint8_t *buf, uint16_t Size);
-	int TCPConnect();
 	int ISOConnect();
 	int NegotiatePduLength();
 	int SetLastError(int Error);
@@ -220,23 +220,22 @@ public:
 	// Input properties
 	uint16_t RecvTimeout; // Receving timeour
 	// Methods
-	//S7Client();
-	S7Client();
-	S7Client(int Media) : S7Client(){}; // Compatibility V1.X
-	~S7Client();
+	S7Client(Client& client);
+	virtual ~S7Client();
 	// Basic functions
-	void SetConnectionParams(IPAddress Address, uint16_t LocalTSAP, uint16_t RemoteTSAP);
+	void SetConnectionParams(uint16_t LocalTSAP, uint16_t RemoteTSAP);
 	void SetConnectionType(uint16_t ConnectionType);
-	int ConnectTo(IPAddress Address, uint16_t Rack, uint16_t Slot);
+	// make sure that the underlying client is connected before calling ConnectTo
+	int ConnectTo(uint16_t Rack, uint16_t Slot);
 	int Connect();
 	void Disconnect();
 	int ReadArea(int Area, uint16_t DBNumber, uint16_t Start, uint16_t Amount, void *ptrData); 
-	int ReadArea(int Area, uint16_t DBNumber, uint16_t Start, uint16_t Amount, int WordLen, void *ptrData); 
+	int ReadArea(int Area, uint16_t DBNumber, uint16_t Start, uint16_t Amount, int uint16_tLen, void *ptrData); 
 	int ReadBit(int Area, uint16_t DBNumber, uint16_t BitStart, bool &Bit); 
 	int WriteArea(int Area, uint16_t DBNumber, uint16_t Start, uint16_t Amount, void *ptrData); 
-	int WriteArea(int Area, uint16_t DBNumber, uint16_t Start, uint16_t Amount, int WordLen, void *ptrData); 
+	int WriteArea(int Area, uint16_t DBNumber, uint16_t Start, uint16_t Amount, int uint16_tLen, void *ptrData); 
 	int WriteBit(int Area, uint16_t DBNumber, uint16_t BitIndex, bool Bit); 
-	int WriteBit(int Area, uint16_t DBNumber, uint16_t ByteIndex, uint16_t BitInByte, bool Bit); 
+	int WriteBit(int Area, uint16_t DBNumber, uint16_t uint8_tIndex, uint16_t BitInuint8_t, bool Bit); 
 	
 	int GetPDULength(){ return PDULength; }
 	// Extended functions

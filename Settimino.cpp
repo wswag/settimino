@@ -372,7 +372,7 @@ void EthernetInit(uint8_t *mac, IPAddress ip)
 #endif    
 }
 //-----------------------------------------------------------------------------
-S7Client::S7Client()
+S7Client::S7Client(Client& client) : TCPClient(&client)
 {
 	// Default TSAP values for connectiong as PG to a S7300 (Rack 0, Slot 2)
 	LocalTSAP_HI = 0x01;
@@ -384,19 +384,11 @@ S7Client::S7Client()
 	LastError = 0;
 	PDULength = 0;
 	RecvTimeout = 500; // 500 ms
-	
-#ifdef S7WIFI	
-    TCPClient = new(WiFiClient);
-#endif    
-#ifdef S7WIRED 
-    TCPClient = new(EthernetClient);
-#endif    
 }
 //-----------------------------------------------------------------------------
 S7Client::~S7Client()
 {
 	Disconnect();
-	delete TCPClient;
 }
 //-----------------------------------------------------------------------------
 int S7Client::SetLastError(int Error)
@@ -455,9 +447,8 @@ int S7Client::RecvPacket(uint8_t *buf, uint16_t Size)
 	return SetLastError(0);
 }
 //-----------------------------------------------------------------------------
-void S7Client::SetConnectionParams(IPAddress Address, uint16_t LocalTSAP, uint16_t RemoteTSAP)
+void S7Client::SetConnectionParams(uint16_t LocalTSAP, uint16_t RemoteTSAP)
 {
-	Peer = Address;
 	LocalTSAP_HI = LocalTSAP>>8;
 	LocalTSAP_LO = LocalTSAP & 0x00FF;
 	RemoteTSAP_HI = RemoteTSAP>>8;
@@ -469,26 +460,23 @@ void S7Client::SetConnectionType(uint16_t ConnectionType)
 	ConnType = ConnectionType;
 }
 //-----------------------------------------------------------------------------
-int S7Client::ConnectTo(IPAddress Address, uint16_t Rack, uint16_t Slot)
+int S7Client::ConnectTo(uint16_t Rack, uint16_t Slot)
 {
-	SetConnectionParams(Address, 0x0100, (ConnType<<8)+(Rack * 0x20) + Slot);
+	SetConnectionParams(0x0100, (ConnType<<8)+(Rack * 0x20) + Slot);
 	return Connect();
 }
 //-----------------------------------------------------------------------------
 int S7Client::Connect()
 {
 	LastError = 0;
-	if (!Connected)
-	{
-		TCPConnect();
-		if (LastError==0) // First stage : TCP Connection
+	if (TCPClient->connected()) {
+		ISOConnect();
+		if (LastError==0) // Second stage : ISOTCP (ISO 8073) Connection
 		{
-			ISOConnect();
-			if (LastError==0) // Second stage : ISOTCP (ISO 8073) Connection
-			{
-				LastError=NegotiatePduLength(); // Third stage : S7 PDU negotiation
-			}
-		}	
+			LastError=NegotiatePduLength(); // Third stage : S7 PDU negotiation
+		}
+	} else {
+		LastError = SetLastError(errTCPConnectionFailed);
 	}
 	Connected=LastError==0;
 	return LastError;
@@ -503,14 +491,6 @@ void S7Client::Disconnect()
 		PDULength = 0;
 		LastError = 0;
 	}	
-}
-//-----------------------------------------------------------------------------
-int S7Client::TCPConnect()
-{
-	if (TCPClient->connect(Peer, isotcp))
-		return SetLastError(0);
-	else
-		return SetLastError(errTCPConnectionFailed);
 }
 //-----------------------------------------------------------------------------
 int S7Client::RecvISOPacket(uint16_t *Size)
